@@ -20,7 +20,7 @@ class File::Ignore {
                     pattern => EVAL('/' ~
                                     ($<leading> ?? '^' !! '') ~
                                     $<path-part>.map(*.ast).join(" '/' ")  ~
-                                    '/'),
+                                    '<?before "/" | $> /'),
                     directory-only => ?$<trailing>
                 );
             }
