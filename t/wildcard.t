@@ -5,6 +5,7 @@ my $ig = File::Ignore.parse(q:to/LIST/);
     *.swp
     dir*/
     /*.tmp
+    result?.txt
     LIST
 
 nok $ig.ignore-file('alright'), 'Do not ignore files not in ignore list';
@@ -30,5 +31,12 @@ ok $ig.ignore-file('x.tmp'), '"/*.tmp" ignores file x.tmp';
 ok $ig.ignore-directory('x.tmp'), '"/*.tmp" ignores directory x.tmp';
 nok $ig.ignore-file('subby/x.tmp'), '"/*.tmp" does not ignore file subby/x.tmp';
 nok $ig.ignore-directory('subby/x.tmp'), '"/*.tmp" does not ignore directory subby/x.tmp';
+
+nok $ig.ignore-file('result.txt'), '"result?.txt" does not ignore file result.txt';
+nok $ig.ignore-directory('result.txt'), '"result?.txt" does not ignore directory result.txt';
+ok $ig.ignore-file('result1.txt'), '"result?.txt" ignores file result1.txt';
+ok $ig.ignore-directory('result1.txt'), '"result?.txt" ignores directory result1.txt';
+nok $ig.ignore-file('result22.txt'), '"result?.txt" does not ignore file result22.txt';
+nok $ig.ignore-directory('result22.txt'), '"result?.txt" does not ignore directory result22.txt';
 
 done-testing;
