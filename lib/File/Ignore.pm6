@@ -101,4 +101,23 @@ class File::Ignore {
         }
         False
     }
+
+    method walk(Str() $path) {
+        sub recurse($path, $prefix) {
+            for dir($path) {
+                my $target = "$prefix$_.basename()";
+                when .d {
+                    unless self.ignore-directory($target) {
+                        recurse($_, "$target/");
+                    }
+                }
+                default {
+                    unless self.ignore-file($target) {
+                        take $target;
+                    }
+                }
+            }
+        }
+        gather recurse($path, '');
+    }
 }
