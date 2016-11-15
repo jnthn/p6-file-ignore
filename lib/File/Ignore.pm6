@@ -10,8 +10,12 @@ class File::Ignore {
             }
 
             token path-part {
-                <-[/]>+
+                <matcher>+
             }
+
+            proto token matcher    { * }
+            token matcher:sym<*>   { <sym> }
+            token matcher:sym<lit> { <-[/*]>+ }
         }
 
         class RuleCompiler {
@@ -26,6 +30,14 @@ class File::Ignore {
             }
 
             method path-part($/) {
+                make $<matcher>.map(*.ast).join(' ');
+            }
+
+            method matcher:sym<*>($/) {
+                make '<-[/]>*';
+            }
+
+            method matcher:sym<lit>($/) {
                 make "'$/.subst('\\', '\\\\', :g).subst('\'', '\\\'', :g)'";
             }
         }
