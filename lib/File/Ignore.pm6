@@ -16,7 +16,8 @@ class File::Ignore {
             proto token matcher    { * }
             token matcher:sym<*>   { <sym> }
             token matcher:sym<?>   { <sym> }
-            token matcher:sym<lit> { <-[/*?]>+ }
+            token matcher:sym<[]>  { '[' [$<negate>='!']? <( <-[\]]>+ )> ']' }
+            token matcher:sym<lit> { <-[/*?[]>+ }
         }
 
         class RuleCompiler {
@@ -40,6 +41,14 @@ class File::Ignore {
 
             method matcher:sym<?>($/) {
                 make '<-[/]>';
+            }
+
+            method matcher:sym<[]>($/) {
+                make '<' ~
+                    ($<negate> ?? '-' !! '') ~
+                    '[' ~
+                    $/.subst('\\', '\\\\', :g) ~
+                    ']-[/]>';
             }
 
             method matcher:sym<lit>($/) {
