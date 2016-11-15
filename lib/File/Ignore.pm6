@@ -9,8 +9,12 @@ class File::Ignore {
                 [ $<trailing>='/' ]?
             }
 
-            token path-part {
-                <matcher>+
+            proto token path-part { * }
+            token path-part:sym<**>      { <sym> }
+            token path-part:sym<matcher> {
+                :my $*FINAL;
+                <matcher>+ {}
+                [<?before '/'? $> { $*FINAL = True }]?
             }
 
             proto token matcher    { * }
@@ -25,14 +29,18 @@ class File::Ignore {
                 make Rule.new(
                     pattern => EVAL('/' ~
                                     ($<leading> ?? '^' !! '') ~
-                                    $<path-part>.map(*.ast).join(" '/' ")  ~
+                                    $<path-part>.map(*.ast).join(' ')  ~
                                     '<?before "/" | $> /'),
                     directory-only => ?$<trailing>
                 );
             }
 
-            method path-part($/) {
-                make $<matcher>.map(*.ast).join(' ');
+            method path-part:sym<matcher>($/) {
+                make $<matcher>.map(*.ast).join(' ') ~ ($*FINAL ?? "" !! " '/'");
+            }
+
+            method path-part:sym<**>($/) {
+                make Q{[ <-[/]>+ [ '/' | $ ] ]*};
             }
 
             method matcher:sym<*>($/) {
