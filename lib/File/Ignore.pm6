@@ -102,6 +102,15 @@ class File::Ignore {
         False
     }
 
+    method ignore-path(Str() $path) {
+        return True if self.ignore-file($path);
+        my @parts = $path.split('/');
+        for @parts.produce(* ~ "/" ~ *) {
+            return True if self.ignore-directory($_);
+        }
+        False
+    }
+
     method walk(Str() $path) {
         sub recurse($path, $prefix) {
             for dir($path) {
