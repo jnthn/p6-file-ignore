@@ -85,6 +85,23 @@ Will produce `False`, since no ignore rule explicitly ignores that file. Note,
 however, that a rule such as `bin/**` would count as explicitly ignoring the
 file (but would not ignore the `bin` directory itself).
 
+## Using File::Ignore in non-walk scenarios
+
+Sometimes it is desirable to apply the ignore rules against an existing list
+of paths. For example, a `find` command run on a remote server produces a set
+of paths. Calling `ignore-file` on each of these will not work reliably,
+thanks to the assumption that it will never be asked about files in a directory
+that would be ignored by `ignore-directory`.
+
+The `ignore-path` method not only checks that a file should be ignored, but
+also checks if any of the directories making up the path should be ignored.
+This means it is safe to apply it to a simple list of paths, in a non-walk
+scenario.
+
+    my $ignores = File::Ignore.new(rules => ['bin/']);
+    say $ignores.ignore-file('bin/x');  # False
+    say $ignores.ignore-path('bin/x');  # True
+
 ## Thread safety
 
 Once constructed, a `File::Ignore` object is immutable, and thus it is safe to
