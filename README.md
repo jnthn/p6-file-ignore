@@ -103,6 +103,31 @@ scenario.
     say $ignores.ignore-file('bin/x');  # False
     say $ignores.ignore-path('bin/x');  # True
 
+## Negation
+
+A rule can be negated by placing a `!` before it. Negative rules are ignored
+until a file or directory matches a positive rule. Then, only negative rules
+are considered, to see if it is then un-ignored. If a matching negative rule
+is found, positive rules continue to be searched.
+
+Therefore, these two rules:
+
+    foo/bar/*
+    !foo/bar/ok
+
+Would ignore everything in `foo/bar/` except `ok`. However:
+
+    !foo/bar/ok
+    foo/bar/*
+
+Would not work because the negation comes before the ignore. Further, negated
+file ignores cannot override directory ignores, so:
+
+    foo/bar/
+    !foo/bar/ok
+
+Would also not work; the trailing `*` is required.
+
 ## Thread safety
 
 Once constructed, a `File::Ignore` object is immutable, and thus it is safe to
