@@ -33,6 +33,7 @@ The following pattern syntax is supported for matching within a path segment
     *       Matches zero or more characters in a path segment
     [abc]   Character class; matches a, b, or c
     [!0]    Negated character class; matches anything but 0
+    [a-z]   Character ranges inside of character classes
 
 Additionally, `**` is supported to match zero or more path segments. Thus, the
 rule ` a/**/b` will match `a/b`, `a/x/b`, `a/x/y/b`, etc.
